@@ -3,8 +3,9 @@ import UserModel from '../models/UserModel';
 class UserController {
   async store(req, res) {
     try {
-      const novoUser = await UserModel.create(req.body);
-      return res.json(novoUser);
+      const newUser = await UserModel.create(req.body);
+      const { id, nome, email } = newUser;
+      return res.json({ id, nome, email });
     } catch (e) {
       return res.status(400).json({
         errors: e.errors.map((error) => error.message),
@@ -15,7 +16,8 @@ class UserController {
   // Index
   async index(req, res) {
     try {
-      const users = await UserModel.findAll();
+      const users = await UserModel.findAll({ attributes: ['id', 'nome', 'email'] }); // atributes filtra os campos para exibir
+      console.log(`UserId: ${req.userId}, userEmail: ${req.userEmail}`);
       res.status(200).json(users);
       return users;
     } catch (e) {
@@ -29,7 +31,9 @@ class UserController {
   async show(req, res) {
     try {
       const user = await UserModel.findByPk(req.params.id);
-      return res.status(200).json(user);
+
+      const { id, nome, email } = user;
+      return res.status(200).json({ id, nome, email });
     } catch (e) {
       console.log(e);
       return res.status(400).json({
@@ -42,12 +46,7 @@ class UserController {
   // Update
   async update(req, res) {
     try {
-      if (!req.params.id) {
-        return res.status(400).json({
-          errors: ['Id não foi enviado.'],
-        });
-      }
-      const user = await UserModel.findByPk(req.params.id);
+      const user = await UserModel.findByPk(req.userId);
 
       if (!user) {
         return res.status(400).json({
@@ -55,7 +54,8 @@ class UserController {
         });
       }
       const newUser = await user.update(req.body);
-      return res.status(200).json(newUser);
+      const { id, nome, email } = newUser;
+      return res.status(200).json({ id, nome, email });
     } catch (e) {
       console.log(e);
       return res.status(400).json({
@@ -66,13 +66,7 @@ class UserController {
 
   // Delete
   async delete(req, res) {
-    if (!req.params.id) {
-      return res.status(400).json({
-        errors: ['Id não foi enviado.'],
-      });
-    }
-
-    const user = await UserModel.findByPk(req.params.id);
+    const user = await UserModel.findByPk(req.userId);
 
     if (!user) {
       return res.status(400).json({
@@ -81,7 +75,8 @@ class UserController {
     }
 
     const deleteUser = await user.destroy();
-    return res.json(deleteUser);
+    const { id, nome, email } = deleteUser;
+    return res.json({ id, nome, email });
   }
 }
 

@@ -21,5 +21,8 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'import/first': 'off',
     'no-param-reassign': 'off',
+    'max-len': 'off',
+    'consistent-return': 'off',
+    'no-empty-function': 'off',
   },
 };
