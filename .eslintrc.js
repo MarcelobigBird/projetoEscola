@@ -24,5 +24,6 @@ module.exports = {
     'max-len': 'off',
     'consistent-return': 'off',
     'no-empty-function': 'off',
+    camelcase: 'off',
   },
 };
