@@ -1,15 +1,17 @@
 import AlunoModel from '../models/AlunoModel';
+import PhotoModel from '../models/PhotoModel';
 
 class AlunoController {
   async index(req, res) {
-    try {
-      const students = await AlunoModel.findAll();
-      res.status(200).json(students);
-    } catch (e) {
-      return res.status(400).json({
-        errors: e.errors.map((error) => error.message),
-      });
-    }
+    const students = await AlunoModel.findAll({
+      attributes: ['id', 'nome', 'sobrenome', 'idade', 'peso', 'altura'],
+      order: [['id', 'DESC'], [PhotoModel, 'id', 'DESC']],
+      include: {
+        model: PhotoModel,
+        attributes: ['url', 'filename'],
+      },
+    });
+    res.status(200).json(students);
   }
 
   async store(req, res) {
@@ -34,7 +36,14 @@ class AlunoController {
         });
       }
 
-      const student = await AlunoModel.findByPk(req.params.id);
+      const student = await AlunoModel.findByPk(req.params.id, {
+        attributes: ['id', 'nome', 'sobrenome', 'idade', 'peso', 'altura'],
+        order: [['id', 'DESC'], [PhotoModel, 'id', 'DESC']],
+        include: {
+          model: PhotoModel,
+          attributes: ['url', 'filename'],
+        },
+      });
       if (!student) return res.status(400).json({ errors: ['Student not exist.'] });
 
       return res.status(200).json(student);
